@@ -64,7 +64,7 @@
         <div class="max-w-7xl mx-auto text-center">
             <!-- 老師照片 -->
             <div class="mb-6 flex justify-center">
-                <img src="01.jpg" alt="何正斌老師" class="teacher-img rounded-full shadow-2xl bg-white">
+                <img src="01.jpg" alt="何正斌老師" class="teacher-img rounded-full shadow-2xl bg-white" onerror="this.src='https://via.placeholder.com/150?text=何正斌老師'">
             </div>
             <h2 class="text-sm uppercase tracking-widest mb-2 opacity-80">工業工程與管理專業課程</h2>
             <h1 class="text-4xl md:text-5xl font-black mb-6">工作研究 Work Study</h1>
@@ -85,26 +85,32 @@
                 <h3 class="text-3xl font-bold text-gray-900 mb-2">上課教材</h3>
                 <p class="text-gray-500">點擊下方連結獲取最新教學資源</p>
             </div>
-            <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                <!-- Canva 簡報 -->
-                <a href="https://www.canva.com/design/DAHC8yOhSko/FLru2SrP06BpL3Z1CiqF2Q/edit" target="_blank" class="flex items-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-blue-500 hover:shadow-md transition group">
-                    <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mr-5 group-hover:bg-blue-600 group-hover:text-white transition">
-                        <i class="fas fa-file-presntation text-2xl"></i>
+            <div class="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                <!-- Canva 簡報 1 -->
+                <a href="https://www.canva.com/design/DAHC8yOhSko/FLru2SrP06BpL3Z1CiqF2Q/edit" target="_blank" class="flex flex-col items-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-blue-500 hover:shadow-md transition group text-center">
+                    <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition">
+                        <i class="fas fa-file-powerpoint text-3xl"></i>
                     </div>
-                    <div>
-                        <h4 class="text-xl font-bold text-gray-800">課程簡報 (Canva)</h4>
-                        <p class="text-gray-500 text-sm">點擊開啟線上投影片</p>
-                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-1">課程簡報 (Canva)</h4>
+                    <p class="text-gray-500 text-xs">基礎理論與方法工程</p>
                 </a>
+                
+                <!-- Canva 簡報 2 -->
+                <a href="https://www.canva.com/design/DAHDyRYk__o/X7dYAl0JGWU76LR_RNJyHQ/edit" target="_blank" class="flex flex-col items-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-orange-500 hover:shadow-md transition group text-center">
+                    <div class="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center text-orange-600 mb-4 group-hover:bg-orange-600 group-hover:text-white transition">
+                        <i class="fas fa-lightbulb text-3xl"></i>
+                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-1">創業家突破思維</h4>
+                    <p class="text-gray-500 text-xs">Canva 線上簡報</p>
+                </a>
+
                 <!-- NotebookLM -->
-                <a href="https://notebooklm.google.com/notebook/184ef7b5-5673-4534-9959-3518321f60ee" target="_blank" class="flex items-center p-6 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-green-500 hover:shadow-md transition group">
-                    <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center text-green-600 mr-5 group-hover:bg-green-600 group-hover:text-white transition">
-                        <i class="fas fa-book-open text-2xl"></i>
+                <a href="https://notebooklm.google.com/notebook/184ef7b5-5673-4534-9959-3518321f60ee" target="_blank" class="flex flex-col items-center p-8 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-green-500 hover:shadow-md transition group text-center">
+                    <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center text-green-600 mb-4 group-hover:bg-green-600 group-hover:text-white transition">
+                        <i class="fas fa-book-open text-3xl"></i>
                     </div>
-                    <div>
-                        <h4 class="text-xl font-bold text-gray-800">晨起工程</h4>
-                        <p class="text-gray-500 text-sm">NotebookLM 學習筆記</p>
-                    </div>
+                    <h4 class="text-lg font-bold text-gray-800 mb-1">晨起工程</h4>
+                    <p class="text-gray-500 text-xs">NotebookLM 筆記系統</p>
                 </a>
             </div>
         </div>
@@ -264,6 +270,4 @@
         renderStudents(studentList);
     </script>
 </body>
-
 </html>
-
