@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>課程作業成果展示區 (3/11)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fcfcfd;
+        }
+
+        .student-circle {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .student-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 標示有連結的同學 */
+        .has-link::after {
+            content: '🔗';
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            font-size: 14px;
+            background: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header Section -->
+    <header class="gradient-bg text-white py-16 px-4 shadow-md">
+        <div class="max-w-6xl mx-auto text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-10 tracking-tight">課程作業成果展示區 (3/11)</h1>
+            
+            <!-- Search Bar -->
+            <div class="relative max-w-lg mx-auto">
+                <input type="text" id="searchInput" placeholder="搜尋姓名..." 
+                       class="w-full py-3 px-6 rounded-full text-slate-900 outline-none border-none text-lg shadow-inner">
+                <div class="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Section -->
+    <main class="max-w-6xl mx-auto py-16 px-6">
+        <!-- Student Grid -->
+        <div id="studentGrid" class="flex flex-wrap justify-center gap-8 md:gap-12">
+            <!-- Circles will be injected by JavaScript -->
+        </div>
+
+        <!-- No Result Message -->
+        <div id="noResults" class="hidden text-center py-20">
+            <p class="text-xl font-medium text-slate-400">找不到這位同學</p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 text-center text-slate-400 text-sm border-t border-slate-100">
+        <p>© 2026 學生作業成果展示</p>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // 學生資料庫與連結映射
+        const studentData = [
+            { name: "葉昇峯", url: "https://notebooklm.google.com/notebook/e31b432d-c71f-4940-9b9d-eb6e1d0ce8e9" }, 
+            { name: "陳佳暄", url: "https://notebooklm.google.com/notebook/78d6468d-96fa-46ff-b00a-2db513860a01?artifactId=22884e8e-43d2-4c53-b218-0a8ead6ac101" }, 
+            { name: "戴嘉樟", url: "https://notebooklm.google.com/notebook/42b007d2-f997-4bca-98aa-18edc77395c7" }, 
+            { name: "陳建樺", url: "" }, 
+            { name: "鍾旨柔", url: "https://notebooklm.google.com/notebook/6a6148a7-6423-423b-a088-db4d526a8b6d?artifactId=b798add8-baa1-42a5-9dcb-9a51a5de53c3" }, 
+            { name: "李佳純", url: "https://notebooklm.google.com/notebook/4dc1ede2-2a24-4e4a-8a29-70c8b30a0d82" }, 
+            { name: "王宇芊", url: "https://notebooklm.google.com/notebook/78d6468d-96fa-46ff-b00a-2db513860a01?artifactId=22884e8e-43d2-4c53-b218-0a8ead6ac101" }, 
+            { name: "羅宇柏", url: "" }, 
+            { name: "曾玉臻", url: "https://notebooklm.google.com/notebook/c2c9cb80-530c-4901-aedf-66071127d9a5?authuser=1" }, 
+            { name: "陳盈均", url: "https://notebooklm.google.com/notebook/f63dc7f4-bed4-4716-be1d-d8497e067096" }, 
+            { name: "陳葦恩", url: "https://notebooklm.google.com/notebook/32f23606-a330-4bd4-886d-68767ec7402b" }, 
+            { name: "周哲平", url: "https://notebooklm.google.com/notebook/9ad78253-e444-4835-aa7e-de98a7812b3a" }, 
+            { name: "胡泊", url: "https://notebooklm.google.com/notebook/6f3ecc42-7474-4ac1-8e82-b7982a3ca684?artifactId=07113245-cd9d-4d78-ac78-f62b24eca723" }, 
+            { name: "余旻真", url: "https://notebooklm.google.com/notebook/05799e14-f67d-45a9-919a-62ad6a178d9b" }, 
+            { name: "劉奕慶", url: "https://notebooklm.google.com/notebook/95bbde35-cc2c-4dce-87bf-8dd2aaf8ac2f" }, 
+            { name: "李欣璇", url: "https://notebooklm.google.com/notebook/1e2f7585-1144-41a2-a101-9dbfc3b30c5d" }, 
+            { name: "吳昕頻", url: "https://notebooklm.google.com/notebook/5a655c2b-4e89-46ee-88f1-b54df3a80153" }, 
+            { name: "陳昱丞", url: "https://notebooklm.google.com/notebook/6f6b4b31-cbd0-4479-ba05-7af8b55634e4?artifactId=b6dc974d-9f22-44ee-a3ee-71369e8f829c" }, 
+            { name: "邱麟媜", url: "https://notebooklm.google.com/notebook/46cb4a5d-d112-4cb5-b4db-131416caa7f9" }, 
+            { name: "陳懿臻", url: "https://notebooklm.google.com/notebook/7305c92f-c682-48e5-9ddb-0274c99c5d8e" }, 
+            { name: "徐佳妤", url: "https://notebooklm.google.com/notebook/2543128c-c538-497f-8c97-4cf74909b62d?artifactId=06113235-609c-4afb-8d8b-2e692c4cfb20" }, 
+            { name: "凌子婷", url: "https://notebooklm.google.com/notebook/39d07a8d-3f1b-4a87-a217-2eefc679ce08" }, 
+            { name: "方晴香", url: "" }, 
+            { name: "陳庭婕", url: "https://notebooklm.google.com/notebook/1fc8f234-547a-4314-ad09-466498a3bb65?artifactId=9aea57da-f59c-463d-8afb-0070eb1eadcd" }, 
+            { name: "毛俊凱", url: "https://notebooklm.google.com/notebook/79357ce5-2896-46a8-96cb-81a8eb0a968d?artifactId=5db4b82a-3327-47d8-b097-02c6de6f513d" }, 
+            { name: "羅心伶", url: "https://notebooklm.google.com/notebook/33599c3f-6dd8-4a75-9402-6982ba1c215c" }, 
+            { name: "鄭怡君", url: "https://notebooklm.google.com/notebook/f6098a21-997c-4284-a5ce-2234f587e01d?artifactId=cbb0cfb6-21e3-443f-845f-882b20c3152f" }, 
+            { name: "朱芊華", url: "https://notebooklm.google.com/notebook/dc621e2e-2eb1-42dd-8da5-75565eeeeac8" }, 
+            { name: "林高良", url: "" }, { name: "陳俊銘", url: "" }, 
+            { name: "單彥綸", url: "https://notebooklm.google.com/notebook/459a86ed-1a4a-422b-b84f-093dec645bbb?artifactId=5961c2cb-4612-44cc-998b-252f62d0a8a0" }, 
+            { name: "鄭雯心", url: "https://notebooklm.google.com/notebook/1a663ac9-4182-4d91-8274-3120026caa9e" }, 
+            { name: "蔡承亨", url: "https://notebooklm.google.com/notebook/ff072d13-7767-4ffc-8471-a354db84278c" }, 
+            { name: "劉昱賢", url: "https://notebooklm.google.com/notebook/8fdd346d-70f8-4647-b81d-25233b373350" }, 
+            { name: "李敏綺", url: "https://notebooklm.google.com/notebook/3999e57d-ff96-455c-8c7b-1607614dc291" }, 
+            { name: "羅品琪", url: "https://notebooklm.google.com/notebook/1d3e34c1-8f98-46a3-92c6-4b5234047183" }, 
+            { name: "歐陽昌傑", url: "https://notebooklm.google.com/notebook/94fad435-aba3-475e-821a-b875595d7921" }, 
+            { name: "王耀樟", url: "https://notebooklm.google.com/notebook/7f44ca15-4f16-4cb0-8576-3e397c5fe037" }, 
+            { name: "施奕岑", url: "https://notebooklm.google.com/notebook/82805241-bcec-4801-a386-1148bdaece00" }, 
+            { name: "蔡政錡", url: "https://notebooklm.google.com/notebook/46141dfe-757f-42bc-8edb-797f22bc139b?artifactId=17929075-d7a2-4baf-a3f8-96500cbb367d" }, 
+            { name: "王玟晴", url: "https://notebooklm.google.com/notebook/33599c3f-6dd8-4a75-9402-6982ba1c215c" }, 
+            { name: "吳竺翰", url: "https://notebooklm.google.com/notebook/bada9fc5-5fe0-43c9-bfdc-551d61656f37?artifactId=7834ffc2-e5c3-4524-ac0b-30340aa59639" }, 
+            { name: "劉睿堉", url: "https://notebooklm.google.com/notebook/dd5862e0-8120-4067-9b2b-0ae0d3bd0894?artifactId=4a5099ee-4e05-4515-8321-9cf2a1a61dd4" }, 
+            { name: "董信佑", url: "https://notebooklm.google.com/notebook/4a14adb3-93b7-41a0-8764-eccfe051f60c?artifactId=6f40726e-318f-4926-aeba-241080881a5e" }, 
+            { name: "劉于嘉", url: "https://notebooklm.google.com/notebook/63954c8a-6135-485a-8563-e195ec4acf21" }, 
+            { name: "阮華霓", url: "" }, { name: "陳亭羽", url: "" }, 
+            { name: "周弈宏", url: "https://notebooklm.google.com/notebook/39033dd0-7f36-48ca-894e-6110b70ccdf0" }, 
+            { name: "蔡興益", url: "https://notebooklm.google.com/notebook/0e8955e2-eb2f-498f-b4ce-c4f79005629e" }, 
+            { name: "陳博承", url: "https://notebooklm.google.com/notebook/931052fd-ad57-4150-8d5f-4a8d7b7c423d" }, 
+            { name: "黃翊瑄", url: "https://notebooklm.google.com/notebook/82d7453d-ec79-4b18-b1c0-78d4c6c0afbd?artifactId=eedd77be-1eb1-402a-a4b6-adf6a51dd2c3" }, 
+            { name: "鄞嘉伶", url: "https://notebooklm.google.com/notebook/00bde677-fc15-4ad7-b038-ed3acbd69ef7?artifactId=9d1eb088-a2d6-45b8-be7a-ef5fba223ad1" }, 
+            { name: "陳鴻翔", url: "https://notebooklm.google.com/notebook/0a2009ec-1b1e-4b4c-95c1-6553ac6e6c1a?artifactId=ac104106-b037-47c9-9f44-ac794e0138a3" }, 
+            { name: "吳若儀", url: "https://notebooklm.google.com/" }, 
+            { name: "蔡岳晉", url: "https://notebooklm.google.com/notebook/1242499e-ba1a-4ff2-8c1a-c811b422c426?artifactId=34f9893d-88d0-43a1-a817-a5a987cbd0fd" }, 
+            { name: "蔡政銓", url: "https://notebooklm.google.com/notebook/54000c4d-470c-4219-aef8-a90090874c8f" }, 
+            { name: "劉秉勳", url: "https://notebooklm.google.com/notebook/161bcfd8-4aa7-4ec2-bcb4-a8d7d7b68dd4?artifactId=a252004c-93ba-4eec-ad8f-daf5773dd889" }, 
+            { name: "鄧至珵", url: "https://notebooklm.google.com/notebook/bfd5f8f7-4b7d-4fd7-9af5-c344e5410697?authuser=1" }, 
+            { name: "張宛軒", url: "https://notebooklm.google.com/notebook/cd0c6dbd-87b6-4409-86dd-53f3db7aaa99?artifactId=8e6fb4ba-981c-4bb2-b9e7-754edeaa5dc7" }, 
+            { name: "李皇諭", url: "https://notebooklm.google.com/notebook/fb0114ad-ce92-4db7-8f40-61a2582ea44d" }, 
+            { name: "余翊領", url: "https://notebooklm.google.com/notebook/bc26e597-7656-4e2b-8f0e-1e11055a4fa7" }, 
+            { name: "林諠妤", url: "https://notebooklm.google.com/notebook/c7e42235-aaf2-41f7-a118-05c5e9b8ec8b?artifactId=fdbf266d-377d-4026-8e6e-59efb0f668e8" }, 
+            { name: "盧廷暉", url: "https://notebooklm.google.com/notebook/4133fab1-1795-4c8b-98ed-ec802dcecb29?artifactId=ff1bac84-7df6-47db-b88b-ba142c979246" }, 
+            { name: "林冠妤", url: "https://notebooklm.google.com/notebook/bf354fae-bd81-45ee-b4c3-fc1d5d043991?artifactId=a806afd8-0f61-465f-b62c-a3a93e441e08" }, 
+            { name: "鍾芷伶", url: "https://notebooklm.google.com/notebook/9e6ca25a-4533-495f-a104-a43e938c2f2c" }, 
+            { name: "謝東諺", url: "https://notebooklm.google.com/notebook/7a8445e1-2852-4431-8532-a0bd8674b756" }, 
+            { name: "林思佑", url: "" }, 
+            { name: "楊雨喬", url: "https://notebooklm.google.com/notebook/66581143-f24b-4cfb-a1db-cf1314cb6305?artifactId=6da180f1-352c-41d1-b6b1-108be1274584" }, 
+            { name: "張簡文勛", url: "https://notebooklm.google.com/notebook/795b32a7-0ab6-4999-9fbd-71aafbcd825a" }, 
+            { name: "夏藝庭", url: "https://notebooklm.google.com/notebook/99926baa-5a6d-4105-bae6-7fb453dcf185" }, 
+            { name: "余宥慧", url: "https://notebooklm.google.com/notebook/44b7b08a-3619-4962-b77e-cc598b578f15" }, 
+            { name: "林承宥", url: "https://notebooklm.google.com/notebook/0d8468f4-7709-46af-9766-c3dfe6f840cf?artifactId=eab1e973-9f6e-479e-aff0-42f432475101" }, 
+            { name: "杜承緯", url: "https://notebooklm.google.com/notebook/562056dd-e55c-4d13-a6c4-269a7b2fac08" }, 
+            { name: "莊宗達", url: "https://notebooklm.google.com/notebook/e744e4c6-01dc-4a65-9f16-e4b7a87cc4c6" }, 
+            { name: "蘇恩瑜", url: "https://notebooklm.google.com/notebook/3bd9a08d-edb3-4c06-af44-2a885223fc1e?artifactId=a65172b2-c56c-4ef5-8701-a6acf16d460f" }, 
+            { name: "林子翔", url: "https://notebooklm.google.com/notebook/254c0678-3371-4202-87b3-f616613bd9d2" }, 
+            { name: "李采育", url: "https://notebooklm.google.com/notebook/fd4d4411-ff51-4a51-8bd8-710b31bfe3dd" }, 
+            { name: "陳柏翰", url: "https://notebooklm.google.com/notebook/e51f871f-4531-4cf7-bf8a-2f7d2373836e" }, 
+            { name: "姚凱文", url: "https://notebooklm.google.com/notebook/f7acb596-bf37-4c79-a934-74a18de1f2ec" }, 
+            { name: "謝文惪", url: "" }, 
+            { name: "殷永昌", url: "https://notebooklm.google.com/notebook/3d6c6fd0-c2ba-4742-8b9d-3f466c34c7d3?authuser=2" }, 
+            { name: "徐紹崴", url: "https://notebooklm.google.com/notebook/8f8311a1-d719-4368-95ab-1af676ae5f2a" }, 
+            { name: "陳建均", url: "https://notebooklm.google.com/notebook/6d767c66-678b-4854-a909-bf38493ffee7?artifactId=db41b1a3-f4a8-40c7-a8ac-8269ab257ba0" }, 
+            { name: "羅采蓁", url: "https://notebooklm.google.com/notebook/95acd76b-b544-4c5f-a6de-118cebe35f4b" }
+        ];
+
+        const grid = document.getElementById('studentGrid');
+        const searchInput = document.getElementById('searchInput');
+        const noResults = document.getElementById('noResults');
+
+        const colors = [
+            'from-blue-400 to-blue-600', 
+            'from-emerald-400 to-emerald-600', 
+            'from-rose-400 to-rose-600', 
+            'from-amber-400 to-amber-600', 
+            'from-violet-400 to-violet-600', 
+            'from-sky-400 to-sky-600',
+            'from-pink-400 to-pink-600',
+            'from-indigo-400 to-indigo-600'
+        ];
+
+        function renderStudents(filter = "") {
+            const filtered = studentData.filter(s => s.name.includes(filter));
+            
+            grid.innerHTML = "";
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                filtered.forEach((student, index) => {
+                    const colorIdx = index % colors.length;
+                    const circleContainer = document.createElement('div');
+                    circleContainer.className = "flex flex-col items-center gap-3 w-24 sm:w-28";
+                    
+                    const hasLinkClass = student.url ? "has-link" : "";
+                    
+                    circleContainer.innerHTML = `
+                        <div class="student-circle ${hasLinkClass} w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br ${colors[colorIdx]} flex items-center justify-center text-white shadow-lg text-2xl font-bold"
+                             onclick="handleStudentClick('${student.name}', '${student.url}')">
+                            ${student.name.charAt(0)}
+                        </div>
+                        <span class="text-sm font-medium text-slate-600 text-center">${student.name}</span>
+                    `;
+                    grid.appendChild(circleContainer);
+                });
+            }
+        }
+
+        window.handleStudentClick = function(name, url) {
+            if (url) {
+                window.open(url, '_blank');
+            } else {
+                console.log("此學生尚未提供連結：" + name);
+            }
+        };
+
+        searchInput.addEventListener('input', (e) => {
+            renderStudents(e.target.value.trim());
+        });
+
+        renderStudents();
+    </script>
+</body>
+</html>
