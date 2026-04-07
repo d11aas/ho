@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學生作業成果展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .student-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .student-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 外部連結的圖示提示 */
+        .link-indicator {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #4f46e5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .student-card:hover .link-indicator {
+            opacity: 1;
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+        }
+
+        .modal-active {
+            display: flex;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- 導航欄 -->
+    <nav class="bg-white border-b sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center">
+                    <div class="bg-indigo-600 text-white p-2 rounded-lg mr-3">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h1 class="text-xl font-bold text-slate-900 tracking-tight">年度作業成果展</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-indigo-600 font-medium px-3 py-2">首頁</a>
+                        <a href="#" class="text-slate-500 hover:text-indigo-600 px-3 py-2 transition">關於課程</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄區塊 -->
+    <header class="bg-indigo-700 py-12 md:py-20 text-white">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h2 class="text-3xl md:text-5xl font-extrabold mb-4">發現創意與才華</h2>
+            <p class="text-indigo-100 text-lg max-w-2xl mx-auto mb-8">
+                直接點擊學生姓名進入對應的作業成果網站。
+            </p>
+            
+            <!-- 搜尋框 -->
+            <div class="max-w-md mx-auto relative">
+                <input type="text" id="searchInput" 
+                    placeholder="輸入學生姓名搜尋..." 
+                    class="w-full pl-12 pr-4 py-3 rounded-full border-none text-slate-900 focus:ring-4 focus:ring-indigo-300 outline-none shadow-lg">
+                <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- 內容區 -->
+    <main class="max-w-7xl mx-auto px-4 py-12">
+        <div class="flex justify-between items-center mb-8 border-b border-slate-200 pb-4">
+            <h3 class="text-2xl font-bold text-slate-800" id="resultCount">全部成果 (39)</h3>
+        </div>
+
+        <!-- 學生卡片網格 -->
+        <div id="studentGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
+            <!-- 由 JavaScript 動態生成 -->
+        </div>
+
+        <!-- 無結果顯示 -->
+        <div id="noResults" class="hidden text-center py-20">
+            <div class="text-slate-300 text-6xl mb-4">
+                <i class="fas fa-search"></i>
+            </div>
+            <h4 class="text-xl text-slate-500">找不到符合條件的學生</h4>
+        </div>
+    </main>
+
+    <!-- 頁腳 -->
+    <footer class="bg-white border-t py-10 mt-12">
+        <div class="max-w-7xl mx-auto px-4 text-center text-slate-500 text-sm">
+            <p>© 2024 學生課程成果展示平台</p>
+        </div>
+    </footer>
+
+    <!-- 僅針對「準備中」學生使用的提示彈窗 -->
+    <div id="modal" class="modal-overlay fixed inset-0 z-50 justify-center items-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full shadow-2xl relative">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+            <div id="modalContent" class="p-10 text-center">
+                <!-- 內容由 JavaScript 填充 -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 外部連結映射表
+        const externalLinks = {
+            "黃子芸": "https://gemini.google.com/gem/1qWYwtBhBArGGQvqJrZhguRSiigcGeCXT?usp=sharing",
+            "洪慧玲": "https://gemini.google.com/gem/14SBK7mZlPL0ck7dSc0cctrDNqK38QHlR?usp=sharing",
+            "曾冠鳴": "https://gemini.google.com/gem/184YlC9e7_f1OGwE3-55joQZJ3tmEr9uE?usp=sharing",
+            "黃建榮": "https://gemini.google.com/gem/1fVCtwYfhm3TweZZJAEgo8kcyo5tdlRDK?usp=sharing",
+            "林黃羿": "https://chatgpt.com/g/g-69ccb175eff48191a145ccc797547573-chang-wen-yue-du-fen-xi-zhu-shou",
+            "李依庭": "https://gemini.google.com/gem/1e-8ZuQNg3FpGclfwMoLL5TYJ1-Sar4Xs?usp=sharing",
+            "胡家妍": "https://gemini.google.com/gem/1BjSdRxb-neI5_1WdnZRYKSJFDCBt6-JF?usp=sharing",
+            "陳佳群": "https://gemini.google.com/gem/1iBIDnJc_IqclmxPQfN1UPozpTgoyfm2f?usp=sharing",
+            "曾韻如": "https://gemini.google.com/gem/1Q3e3g7IJzhDR-tBq5oSRHti-eVQFM4iP?usp=sharing",
+            "蔡文瑜": "https://gemini.google.com/gem/1EEnXYXeKwO-n_UgRoTPh6qUjuoyaTVnv?usp=sharing",
+            "朱桂棠": "https://chatgpt.com/g/g-69ca2713f6e88191afa27b3a686f98d8-lun-wen-wen-xian-fen-xi-yu-liang-hua-yan-jiu-zhu-shou",
+            "唐莆家": "https://gemini.google.com/gem/153-u6qtYwMeu4TAnAVXAOom-3E9OAroO?usp=sharing",
+            "陳品瑄": "https://gemini.google.com/gem/1q9RlJvFrt6YO9_AaSiC025-nhgfdxi8E?usp=sharing",
+            "許詩沅": "https://gemini.google.com/gem/1G25GpH_7PtgvGIb60p4mrQOIGsYQVzIE?usp=sharing",
+            "宋昌庭": "https://chatgpt.com/g/g-69ca21d53e4081918e5011209960a1bd-xun-xi-zhu-shou",
+            "王緯翔": "https://ai.studio/apps/c2207262-d17e-4ddb-9394-a465f13cf76b",
+            "廖盈貴": "https://gemini.google.com/gem/1T8F6fz36CGoYU9VTNkH3ejCjquxYehfm?usp=sharing",
+            "黃宜璇": "https://gemini.google.com/app/a023fc151dbebb54",
+            "蘇靚瑀": "https://gemini.google.com/gem/17mZWvJ-8pDmtPRLlmv710aZBIEGothfQ?usp=sharing",
+            "林杰毅": "https://gemini.google.com/gem/1rmJSgLTgUIesxxsc4U0re5yhfLrJczVW?usp=sharing",
+            "周芳毓": "https://gemini.google.com/gem/1bW1WQ8xPeRHkgUCubQVG8cK_NlxIunmQ?usp=sharing",
+            "李芷迎": "https://gemini.google.com/gem/1iXW0-Wfp4Rc74yLGeXPm1SyoQM3aodUR?usp=sharing",
+            "魏俊溢": "https://gemini.google.com/gem/194qrg8LuG0MQaarlJ_Ztsd0dij8e1r7U?usp=sharing",
+            "沈群鈞": "https://gemini.google.com/gem/1VzoMwNqqzsuCXxPZ95BANbbKdGhslQCw?usp=sharing",
+            "于驊麟": "https://gemini.google.com/gem/1HyiCLS2OfaFsxSw4OqgjiEDL4I95iFkW?usp=sharing",
+            "鄭卉庭": "https://gemini.google.com/gem/1-zRV3kY7pOm6dxx2YOpPDiD6aV1AYZTU?usp=sharing",
+            "蘇郁媜": "https://chatgpt.com/g/g-69d293e146688191afd98c8d6c97553c-bei-qing-xu-zuo-you-de-tian-dian-dian",
+            "沈宛瑩": "https://gemini.google.com/gem/57a3e73d5448"
+        };
+
+        const students = [
+            "洪慧玲", "魏俊溢", "許詩沅", "廖盈貴", "黃子芸", "沈宛瑩", "陳嘉億", "黃筠庭", "黃心霓", "陳楷文",
+            "林宥任", "周芳毓", "林映羽", "李冠儀", "沈群鈞", "李依庭", "黃宜璇", "陸翊寧", "蔡文瑜", "鄭卉庭",
+            "林黃羿", "于驊麟", "郭之駿", "李芷迎", "黃建榮", "陳品瑄", "林采儀", "胡家妍", "林杰毅", "蘇靚瑀",
+            "王緯翔", "曾冠鳴", "戴維雄", "唐莆家", "宋昌庭", "陳佳群", "曾韻如", "蘇郁媜", "朱桂棠"
+        ];
+
+        // 核心修改：統一所有學生的顯示屬性
+        const studentData = students.map((name, index) => {
+            return {
+                id: index + 1,
+                name: name,
+                url: externalLinks[name] || null,
+                hasLink: !!externalLinks[name],
+                color: "bg-indigo-50",
+                textColor: "text-indigo-600",
+                icon: "fa-user-graduate" // 統一使用學士圖示
+            };
+        });
+
+        const grid = document.getElementById('studentGrid');
+        const searchInput = document.getElementById('searchInput');
+        const resultCount = document.getElementById('resultCount');
+        const noResults = document.getElementById('noResults');
+
+        let searchQuery = '';
+
+        function renderStudents() {
+            const filtered = studentData.filter(s => s.name.includes(searchQuery));
+
+            grid.innerHTML = '';
+            
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+                filtered.forEach(s => {
+                    const card = document.createElement('div');
+                    card.className = 'student-card bg-white rounded-xl overflow-hidden border border-slate-200 cursor-pointer flex flex-col items-center justify-center p-6 text-center';
+                    
+                    card.onclick = () => {
+                        if (s.hasLink) {
+                            window.open(s.url, '_blank');
+                        } else {
+                            openModal(s.name);
+                        }
+                    };
+
+                    card.innerHTML = `
+                        ${s.hasLink ? '<div class="link-indicator"><i class="fas fa-external-link-alt"></i></div>' : ''}
+                        <div class="w-16 h-16 ${s.color} ${s.textColor} rounded-full flex items-center justify-center text-2xl mb-4">
+                            <i class="fas ${s.icon}"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800">${s.name}</h4>
+                        ${s.hasLink ? '<span class="mt-2 text-[10px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">點擊瀏覽成果</span>' : '<span class="mt-2 text-[10px] bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">整理中</span>'}
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+            
+            resultCount.innerText = `全部成果 (${filtered.length})`;
+        }
+
+        searchInput.oninput = (e) => {
+            searchQuery = e.target.value;
+            renderStudents();
+        };
+
+        function openModal(name) {
+            const modal = document.getElementById('modal');
+            const content = document.getElementById('modalContent');
+            
+            content.innerHTML = `
+                <div class="w-20 h-20 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">${name}</h2>
+                <p class="text-slate-500 mb-8">此學生的成果內容正在進行最後審核與上傳，請稍後再回來查看。</p>
+                <button onclick="closeModal()" class="w-full bg-slate-800 text-white py-3 rounded-xl font-bold hover:bg-slate-700 transition">
+                    知道了
+                </button>
+            `;
+            
+            modal.classList.add('modal-active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('modal');
+            modal.classList.remove('modal-active');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('modal').onclick = (e) => {
+            if (e.target.id === 'modal') closeModal();
+        };
+
+        window.onload = renderStudents;
+    </script>
+</body>
+</html>
